@@ -81,8 +81,8 @@ function runVis(data) {
   var enter = stories.enter()
     .append("rect")
     .attr("class","bar")
-    .on("mouseenter",function(d){d3.select("#title").text(d.title)})
-    .on("click",function(d){d3.select("#title").text(d.score)})
+    .on("mouseover",function(d){d3.select("#title").text(d.title)})
+    .on("click",function(d){window.location = d.url})
 
   stories
     .attr("width",function(d,i) {
@@ -90,11 +90,13 @@ function runVis(data) {
     })
     .attr("height",20)
     .attr("x",0)
-    .attr("y",function(d,i){
-      return i * 25;
-    });
+    .attr("y",function(d,i){return 25*i}
+    );
+
+
 
 }
+
 
 function formatRedditData(data) {
   // dig through reddit's data structure to get a flat list of stories
