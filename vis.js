@@ -61,7 +61,7 @@ function runVis(data) {
 
  */ 
   
-  var WIDTH = 200;
+  var WIDTH = 500;
 
   var stories = d3.select("#graph")
     .selectAll(".bar")
@@ -73,18 +73,16 @@ function runVis(data) {
 
   var xScale = d3.scale.linear()
     .domain([0,formatted.length - 1])
-    .range([0,200]);
+    .range([0,5000]);
   var widthScale = d3.scale.linear()
     .domain(scoreExtent)
-    .range([5,WIDTH])
+    .range([15,WIDTH])
 
   var enter = stories.enter()
     .append("rect")
     .attr("class","bar")
     .on("mouseenter",function(d){d3.select("#title").text(d.title)})
-    .on("click",function(d) {
-    return d.score;
-  })
+    .on("click",function(d){d3.select("#title").text(d.score)})
 
   stories
     .attr("width",function(d,i) {
