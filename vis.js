@@ -10,15 +10,15 @@ function redditVis() {
 
   // initial setup only needs to happen once 
   // - we don't want to append multiple svg elements
-  redditSvg = d3.select("body")
+/*  redditSvg = d3.select("body")
         .append("svg")
-        .attr("width",document.body.clientWidth - 50)
-        .attr("height",document.body.clientWidth -50)
+        .attr("width",200)
+        .attr("height",800)*/
 }
 
 function requestData() {
   // our jsonp url, with a cache-busting query parameter
-  d3.jsonp("http://www.reddit.com/.json?jsonp=runVis&noCache=" + Math.random());
+  d3.jsonp("https://www.reddit.com/.json?jsonp=runVis&noCache=" + Math.random());
 }
 
 
@@ -32,46 +32,71 @@ function runVis(data) {
   // so we'll need to get data into the right format, with the
   // previous values attached
   var formatted = formatRedditData(data,previousData);
-
+  ///console.log("vvvvvv",formatted);
   // select our stories, pulling in previous ones to update
   // by selecting on the stories' class name
+/*  
   var stories = redditSvg
-     .selectAll("text")
+     .selectAll(".bar")
      // the return value of data() is the update context - so the 'stories' var is
      // how we refence the update context from now on
      .data(formatted,function(d) {
        // prints out data in your console id, score, diff from last pulling, text
        
-       // console.log(d.id,d.score,d.diff,d.title);
+      console.log(d.id);
 
        // use a key function to ensure elements are always bound to the same 
        // story (especially important when data enters/exits)
        return d.id;
      });
 
+*/
+
   // ENTER context
-  stories.enter()
+/*stories.enter()
     .append("text")
     .text(function(d){return d.score + " " + d.diff + " " + d.title})
     .attr("y", function(d,i){return 1.5*i + 1 + "em"})
     .style("color","black");
 
-  // UPDATE + ENTER context
-  // elements added via enter() will then be available on the update context, so
-  // we can set attributes once, for entering and updating elements, here
+ */ 
+  
+  var WIDTH = 200;
+
+  var stories = d3.select("#graph")
+    .selectAll(".bar")
+    .data(formatted,function(d){return d.id});
+
+  var scoreExtent = d3.extent(formatted,function(d) {
+    return d.score;
+  })
+
+  var xScale = d3.scale.linear()
+    .domain([0,formatted.length - 1])
+    .range([0,200]);
+  var widthScale = d3.scale.linear()
+    .domain(scoreExtent)
+    .range([5,WIDTH])
+
+  var enter = stories.enter()
+    .append("rect")
+    .attr("class","bar")
+    .on("mouseenter",function(d){d3.select("#title").text(d.title)})
+    .on("click",function(d) {
+    return d.score;
+  })
+
   stories
-    .text(function(d){return d.score + " " + d.diff + " " + d.title})
+    .attr("width",function(d,i) {
+      return widthScale(d.score);
+    })
+    .attr("height",20)
+    .attr("x",0)
+    .attr("y",function(d,i){
+      return i * 25;
+    });
 
-  // EXIT content
-  stories.exit()
-    .remove()
 }
-
-
-//////// PLEASE EDI runVis() /////////
-/////////////////////////////////////
-/////////////////////////////////////
-
 
 function formatRedditData(data) {
   // dig through reddit's data structure to get a flat list of stories
